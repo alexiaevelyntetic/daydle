@@ -14,6 +14,9 @@ How to install and run everything is in [README.md](README.md). This file covers
 | Daily-challenge extension, plus the reference replay with it enabled | `api/test/daily.test.ts` | all pass |
 | Persistence across a restart | test that closes and reopens the SQLite file; also a forced kill (`taskkill /F`) of the real server | data intact |
 | The tests catch a wrong rule | changed the bonus cap from 14 to 16 on purpose | replay fails from line 24, as expected |
+| `docker compose up --build` | both images built from scratch; API healthy, UI on 3000, UI proxy reaches `http://api:3001` | works |
+| Replay against the API **in Docker** | `npm run replay -- http://localhost:3001` | 68/68 |
+| Persistence in Docker | `docker compose down`, then `up`: compared `/me`, `/quests` and `/completions` | identical (data lives in the `questlog-data` volume) |
 
 `npm test` runs **46 tests, all passing**. Other recordings can be replayed with `RECORDINGS=a.jsonl npm test`, or against a live server with `npm run replay -- <url> <file>`. IDs are mapped on first sight, and error messages are only checked for presence (they are free text by contract).
 
@@ -92,7 +95,7 @@ The Next.js UI talks to the API through a same-origin proxy. Completing and undo
 
 ## 5. Where the solution is weakest
 
-- **Docker is written but was not run here.** Docker Desktop's engine would not start on this machine (its Windows service could not be started). The no-Docker path (`npm start`) was tested end to end, including a restart. The Docker side was only checked indirectly: the standalone Next build produces the `web/server.js` the image runs, and the lockfile contains the Linux native binaries.
+- **Docker was tested on one machine only** (Windows 11, Docker Desktop with WSL 2, Linux containers). The build depends on two network downloads: npm packages, and the Fraunces font, which `next/font` fetches from Google Fonts at build time. A build behind a restrictive proxy or offline would fail at that step.
 - **The rules exist twice.** `web/lib/rules.ts` copies `api/src/rules.ts` so the UI can predict a pending result. If they drift, the prediction is wrong for a moment and then corrected by the server, but it would still be a visible flicker.
 - **Guessed edge cases.** Every "choice" in §4 is a guess the recording cannot confirm. The most likely to differ from the old app: the validation order, ordering when `X-Now` goes backwards in time, and how completions dated after "now" (possible with `X-Now`) affect the streak.
 - **Cost of recomputing.** Every request recomputes XP from the full history. That is fine for one user and years of data, but it would not scale to many users without caching.
