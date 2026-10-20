@@ -1,0 +1,23 @@
+{
+  "name": "questlog",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "api",
+    "web"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "npm install --no-audit --no-fund && npm run build && npm run serve",
+    "build": "npm run build -w api && npm run build -w web",
+    "serve": "concurrently --kill-others --names api,web --prefix-colors blue,magenta \"npm run start -w api\" \"npm run start -w web\"",
+    "dev": "concurrently --kill-others --names api,web --prefix-colors blue,magenta \"npm run dev -w api\" \"npm run dev -w web\"",
+    "test": "npm test -w api",
+    "replay": "npm run replay -w api --"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}

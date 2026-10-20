@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* `dark:` follows the theme the user picked (data-theme on <html>), not only the OS setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Palette from the Daydle brand images: dark = lime on deep green, light = deep green on lime. */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ink-950: #061a13;
+  --ink-900: #0a241b;
+  --ink-850: #0d2d21;
+  --ink-800: #113829;
+  --ink-700: #174634;
+  --ink-600: #1f5a43;
+  --mist-50: #effbe3;
+  --mist-200: #cbe7b6;
+  --mist-400: #95c08e;
+  --mist-500: #6e9c73;
+  --xp-a: #8fdc5a;
+  --xp-b: #c8e36a;
+  --on-accent: #0b3a26;
+  --fg: #ffffff;
+  --shade: #000000;
+  --flame: #ffa94d;
+  --glow: rgb(143 220 90 / 0.45);
+  --page:
+    radial-gradient(70rem 40rem at 50% 120%, rgb(0 0 0 / 0.35), transparent 70%),
+    linear-gradient(115deg, #145f48 0%, #1a6d36 50%, #23801f 100%);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --ink-950: #ffffff;
+  --ink-900: #f3f9e4;
+  --ink-850: #fafdf1;
+  --ink-800: #eef7da;
+  --ink-700: #dff0c2;
+  --ink-600: #c9e3a4;
+  --mist-50: #0c2e20;
+  --mist-200: #1d4a34;
+  --mist-400: #45684f;
+  --mist-500: #5f8466;
+  --xp-a: #16684f;
+  --xp-b: #23861f;
+  --on-accent: #ffffff;
+  --fg: #0b3a26;
+  --shade: #1d4a1f;
+  --flame: #e8641c;
+  --glow: rgb(22 104 79 / 0.35);
+  --page: linear-gradient(115deg, #8fdc5a 0%, #b0e163 50%, #c8e36a 100%);
+}
+
+@theme inline {
+  --color-ink-950: var(--ink-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-850: var(--ink-850);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-mist-50: var(--mist-50);
+  --color-mist-200: var(--mist-200);
+  --color-mist-400: var(--mist-400);
+  --color-mist-500: var(--mist-500);
+  --color-xp-a: var(--xp-a);
+  --color-xp-b: var(--xp-b);
+  --color-on-accent: var(--on-accent);
+  /* Foreground tint for hairlines and hover fills: white on dark, deep green on light. */
+  --color-fg: var(--fg);
+  --color-shade: var(--shade);
+  --color-flame: var(--flame);
+
+  /* Fraunces for everything (sans/display/serif all map to it), Georgia as fallback. */
+  --font-sans: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
+
+  --animate-shimmer: shimmer 2.4s ease-in-out infinite;
+  --animate-flicker: flicker 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-120%); }
+  60%, 100% { transform: translateX(220%); }
+}
+
+@keyframes flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50% { transform: scale(1.06) rotate(2deg); }
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--page);
+  background-attachment: fixed;
+  color: var(--mist-50);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Brief cross-fade while switching themes (class added by the toggle for ~400 ms). */
+html.theme-switching,
+html.theme-switching * {
+  transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease, fill 0.35s ease !important;
+}
+
+/* Native date picker icon readable on dark backgrounds. */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
