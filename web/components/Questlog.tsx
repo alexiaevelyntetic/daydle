@@ -13,6 +13,7 @@ import { QuestList } from "./QuestList";
 import { ThemeToggle } from "./ThemeToggle";
 import { TimezonePicker } from "./TimezonePicker";
 import { Toasts } from "./Toasts";
+import { WeekStats } from "./WeekStats";
 import { XpHeader } from "./XpHeader";
 
 export function Questlog() {
@@ -65,28 +66,46 @@ export function Questlog() {
 
             <XpHeader me={view.me} completions={[...view.completions, ...view.dailyCompletions]} today={view.today} />
 
+            {/*
+              Desktop: two columns (the day's flow on the left, tools and progress on the right, sticky).
+              Mobile: the column wrappers become `contents`, so every card is its own grid row and the
+              `order-*` classes put the form right after the quests.
+            */}
             <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-              <div className="min-w-0 space-y-6">
-                <DailyCard
-                  daily={view.daily}
-                  timezone={view.me.timezone}
-                  pending={view.pendingDaily}
-                  onComplete={() => void q.completeDaily()}
-                />
-                <QuestList quests={view.quests} today={view.today} pending={view.pendingQuests} onComplete={(quest) => void q.complete(quest)} />
+              <div className="contents lg:block lg:min-w-0 lg:space-y-6">
+                <div className="order-1 min-w-0">
+                  <DailyCard
+                    daily={view.daily}
+                    timezone={view.me.timezone}
+                    pending={view.pendingDaily}
+                    onComplete={() => void q.completeDaily()}
+                  />
+                </div>
+                <div className="order-2 min-w-0">
+                  <QuestList quests={view.quests} today={view.today} pending={view.pendingQuests} onComplete={(quest) => void q.complete(quest)} />
+                </div>
+                {/* History sits under the quests it belongs to, so the left column never ends early. */}
+                <div className="order-4 min-w-0">
+                  <Completions
+                    completions={view.completions}
+                    dailyCompletions={view.dailyCompletions}
+                    onUndoDaily={(c) => void q.undoDaily(c)}
+                    quests={view.quests}
+                    today={view.today}
+                    timezone={view.me.timezone}
+                    pending={view.pendingCompletions}
+                    onUndo={(c, title) => void q.undo(c, title)}
+                  />
+                </div>
               </div>
-              <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-                <QuestForm today={view.today} onCreate={q.createQuest} />
-                <Completions
-                  completions={view.completions}
-                  dailyCompletions={view.dailyCompletions}
-                  onUndoDaily={(c) => void q.undoDaily(c)}
-                  quests={view.quests}
-                  today={view.today}
-                  timezone={view.me.timezone}
-                  pending={view.pendingCompletions}
-                  onUndo={(c, title) => void q.undo(c, title)}
-                />
+              <aside className="contents lg:sticky lg:top-6 lg:block lg:space-y-6 lg:self-start">
+                <div className="order-3 min-w-0">
+                  <QuestForm today={view.today} onCreate={q.createQuest} />
+                </div>
+                {/* Desktop only: on phones the streak card already shows the week. */}
+                <div className="order-5 hidden min-w-0 lg:block">
+                  <WeekStats completions={[...view.completions, ...view.dailyCompletions]} today={view.today} />
+                </div>
               </aside>
             </div>
 
