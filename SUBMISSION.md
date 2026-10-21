@@ -104,7 +104,7 @@ The Next.js UI talks to the API through a same-origin proxy. Completing and undo
 
 ## 6. AI use
 
-*(Draft, adjust to what you actually did:)* I used Claude (Claude Code) for most of the code, tests, analysis and docs. I checked by hand the rules in RULES.md against the recording lines, the replay results, and the UI behaviour in a browser, including failure and level-up cases.
+I used Claude (Claude Code) for parts of the code, tests, analysis and docs. I checked by hand the rules in RULES.md against the recording lines, the replay results, and the UI behaviour in a browser, including failure and level-up cases.
 
 ## 7. Noticed outside the task, not fixed
 
